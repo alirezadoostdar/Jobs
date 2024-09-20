@@ -9,7 +9,9 @@ namespace Jobs
         private readonly JobSettings jobSettings = options.Value.JobSettings;
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            RecurringJob.AddOrUpdate<alert>
+            RecurringJob.AddOrUpdate<AlertSmsPanelJob>(
+                AlertSmsPanelJob.JobName,
+                j)
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
