@@ -1,7 +1,13 @@
+using Hangfire;
+using Hangfire.Redis.StackExchange;
+using Microsoft.AspNetCore.Http;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddHangfire(configure =>
+{
+    configure.UseRedisStorage("",)
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -16,29 +22,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapPost("/upload", (IFormFile file, ILogger<Program> logger) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    //save
+    Task.Run(async () => await DoSomeThing(file, logger));
+    return Results.Ok;
+}).DisableAntiforgery();
 
 app.Run();
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+
+static async Task DoSomeThing(IFormFile streamFile,ILogger<Program> logger)
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    await Task.Delay(10000);
+    logger.LogInformation("done!");
 }
