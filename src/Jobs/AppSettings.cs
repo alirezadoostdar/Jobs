@@ -9,6 +9,8 @@ public class AppSettings
 
 public class JobSettings
 {
+    public const string SectionName = "JobSettings";
+    public required string AlertSmsPanelJobCron { get; set; }
     public required ExtendedRedisStorageOptions RedisStorage { get; set; }
 }
 

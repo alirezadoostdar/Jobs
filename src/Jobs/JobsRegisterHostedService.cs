@@ -1,5 +1,4 @@
 ﻿using Hangfire;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Jobs
@@ -11,12 +10,18 @@ namespace Jobs
         {
             RecurringJob.AddOrUpdate<AlertSmsPanelJob>(
                 AlertSmsPanelJob.JobName,
-                j)
+                JobQueues.Priority1,
+                x => x.ExecuteAsync(),
+                jobSettings.AlertSmsPanelJobCron);
+
+            GlobalConfiguration.Configuration.UseActivator(new HangfireJobActivator(scopeFactory));
+
+            return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 }
